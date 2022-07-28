@@ -1,7 +1,7 @@
 package config
 
 import (
-	"encoding/json"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
@@ -12,7 +12,6 @@ type Config struct {
 	ApiWriteTimeout       int      `yaml:"apiWriteTimeout"`
 	EtcdEndpoints         []string `yaml:"etcdEndpoints"`
 	EtcdDialTimeout       int      `yaml:"etcdDialTimeout"`
-	WebRoot               string   `yaml:"webroot"`
 	MongodbUri            string   `yaml:"mongodbUri"`
 	MongodbConnectTimeout int      `yaml:"mongodbConnectTimeout"`
 }
@@ -22,6 +21,7 @@ var (
 	filename = "config.yaml"
 )
 
+//InitConfig 初始化配置文件
 func InitConfig() (err error) {
 	var (
 		content []byte
@@ -30,7 +30,7 @@ func InitConfig() (err error) {
 		return
 	}
 
-	if err = json.Unmarshal(content, &G_config); err != nil {
+	if err = yaml.Unmarshal(content, &G_config); err != nil {
 		return
 	}
 	return
