@@ -6,7 +6,7 @@ import "encoding/json"
 type Response struct {
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
-	retcode int         `json:"retcode"`
+	Retcode int         `json:"retcode"`
 }
 
 //应答方法
@@ -16,7 +16,7 @@ func BuildResponse(retcode int, message string, data interface{}) (resp []byte, 
 	)
 	response.Data = data
 	response.Message = message
-	response.retcode = retcode
+	response.Retcode = retcode
 	//序列换json
 	resp, err = json.Marshal(response)
 	return

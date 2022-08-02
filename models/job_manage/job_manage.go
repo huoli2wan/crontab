@@ -41,7 +41,7 @@ func InitJobManage() (err error) {
 	//初始化配置
 	conf = clientv3.Config{
 		Endpoints:   config.G_config.EtcdEndpoints,                                     //集群地址
-		DialTimeout: time.Duration(config.G_config.EtcdDialTimeout) * time.Microsecond, //连接超时
+		DialTimeout: time.Duration(config.G_config.EtcdDialTimeout) * time.Millisecond, //连接超时
 	}
 	//建立连接
 	if client, err = clientv3.New(conf); err != nil {
@@ -57,7 +57,7 @@ func InitJobManage() (err error) {
 		lease:  lease,
 	}
 
-	defer client.Close()
+	//defer client.Close()
 	return
 }
 
@@ -69,6 +69,7 @@ func (jobManage *JobManage) Create(job *Job) (oldJob *Job, err error) {
 		putResponse *clientv3.PutResponse
 		oldJobObj   Job
 	)
+
 	jobKey = vars.JOB_SAVE_DIR + job.Name
 	if jobValue, err = json.Marshal(job); err != nil {
 		return
@@ -114,5 +115,28 @@ func (jobManage *JobManage) List() (jobList []*Job, err error) {
 		jobList = append(jobList, job)
 	}
 
+	return
+}
+
+// 删除任务
+func (jobManage *JobManage) DeleteJob(name string) (oldJob *Job, err error) {
+	var (
+		jobKey    string
+		delResp   *clientv3.DeleteResponse
+		oldJobObj Job
+	)
+	jobKey = vars.JOB_SAVE_DIR + name
+	if delResp, err = jobManage.kv.Delete(context.TODO(), jobKey, clientv3.WithPrevKV()); err != nil {
+		return
+	}
+
+	if len(delResp.PrevKvs) != 0 {
+		if err = json.Unmarshal(delResp.PrevKvs[0].Value, &oldJobObj); err != nil {
+			err = nil
+			return
+		}
+		oldJob = &oldJobObj
+		return
+	}
 	return
 }

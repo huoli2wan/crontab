@@ -14,7 +14,7 @@ func initRoute() *http.ServeMux {
 	mux := http.NewServeMux()
 	handler := handers.Handler{}
 	mux.HandleFunc("/job/create", handler.CreateJob)
-	mux.HandleFunc("/job/delete", handler.DeleteJob)
+	mux.HandleFunc("/job/del", handler.DeleteJob)
 	mux.HandleFunc("/job/list", handler.ListJob)
 	mux.HandleFunc("/job/kill", handler.KillJob)
 	return mux
